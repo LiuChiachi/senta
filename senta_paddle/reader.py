@@ -12,8 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import numpy as np
-from .utils import load_vocab
-from .utils import data_reader
+from utils import load_vocab
+from utils import data_reader
 
 import paddle
 

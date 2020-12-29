@@ -19,8 +19,9 @@ import argparse
 import numpy as np
 import paddle
 import paddle.fluid as fluid
-from paddle.fluid.dygraph.base import to_variable
-from paddle.framework import manual_seed
+# import paddle.to_tensor as to_tensor
+# from paddle.fluid.dygraph.base import to_variable
+# from paddle.framework import manual_seed
 import nets
 import reader
 from utils import ArgumentGroup
@@ -80,7 +81,7 @@ else:
 
 # os.environ['FLAGS_selected_gpus']= "7"
 
-manual_seed(123)
+paddle.seed(123)
  
 args.random_seed = 123
 args.ce = True
@@ -143,7 +144,7 @@ def train():
             if 'embedding' in param_name:
                 state_dict = model.state_dict()
                 param_dict[param_name][0] = 0
-                state_dict[param_name] = paddle.to_variable(param_dict[param_name])
+                state_dict[param_name] = paddle.to_tensor(param_dict[param_name])
                 model.set_dict(state_dict)
                 # print(param_dict[param_name][0])
         np.savez('./paramters.npz', **param_dict)
@@ -168,8 +169,8 @@ def train():
                 reader_begin = time.time()
                 seq_len_arr = np.array([len(x[0]) for x in data], dtype="int64")
                 steps += 1
-                seq_len = to_variable(seq_len_arr)
-                doc = to_variable(
+                seq_len = paddle.to_tensor(seq_len_arr)
+                doc = paddle.to_tensor(
                     np.array([
                         np.pad(x[0][0:args.padding_size], (
                             0, args.padding_size - len(x[0][
@@ -179,7 +180,7 @@ def train():
                         for x in data
                     ]).astype('int64'))
 
-                label = to_variable(
+                label = paddle.to_tensor(
                     np.array([x[1] for x in data]).astype('int64').reshape(
                         args.batch_size, 1))
 
